@@ -1,1 +1,2 @@
-# VR_Optimizers_Pytorch
+# Variance Reduced Optimizers in PyTorch
+
