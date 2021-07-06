@@ -5,8 +5,6 @@ from torch.utils.data import DataLoader
 import numpy as np
 import time
 
-# import wandb
-
 from opts import parse_args
 from optims.utils import get_full_gradient, get_grad_norm
 from utils.logger import Logger
@@ -93,10 +91,6 @@ def init_and_train_model(args, train_set, test_loader):
         return
     # create model directory
     os.makedirs(model_dir, exist_ok=True)
-    # init wandb tracking
-    # wandb.init(project='scaled_grad', entity='samuelhovath',
-    #            config=vars(args), name=str(create_model_dir(args, only_setup=True)),
-    #            reinit=True)
     # save used args as json to experiment directory
     with open(os.path.join(create_model_dir(args), 'args.json'), 'w') as f:
         json.dump(vars(args), f, indent=4)
@@ -119,7 +113,6 @@ def init_and_train_model(args, train_set, test_loader):
         if spend_budget >= current_epoch * len(train_set):
             metrics_train = create_metrics_dict(metrics_meter, train=True)
             extend_metrics_dict(full_metrics, metrics_train)
-            # wandb.log(just_epoch_key(metrics_train))
             train_time = time.time() - start
             train_time_meter += train_time  # Track timings for across epochs average
             Logger.get().debug(f'Epoch train time: {train_time}')
@@ -133,7 +126,6 @@ def init_and_train_model(args, train_set, test_loader):
                     grad_norm = get_grad_norm(grad)
                 extend_metrics_dict(
                     full_metrics, metrics_eval, grad_norm=grad_norm, add_grad_norm=args.track_grad_norm)
-                # wandb.log(just_epoch_key(metrics_eval))
                 key = get_key(train=False)
                 avg_metric = metrics_eval[key + metric_to_optim]
                 # Save model checkpoint
